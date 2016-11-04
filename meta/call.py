@@ -33,12 +33,12 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
             print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n')
                        
 
-class C(float,metaclass=metaB)    :
+class C(B,metaclass=metaB)    :
     cNum=5
   
     def __init__(self,v):
             print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
-            super().__init__()#这里不能写self居然
+            super().__init__(v)#这里不能写self居然
             print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
             
     pass
