@@ -1,11 +1,7 @@
 # -*- coding: UTF-8 -*-
 import inspect
 import collections
-class B(object):
-    bNum=2
-    def __init__(self,v):
-        self.v=v
-    pass
+
 
 class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是type的metaClass还是type.call而不是metaB.call
 #所以你看不到C=type()这个call里面的template,你只能看到o=C()的()的过程
@@ -32,8 +28,13 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
             obj = super().__init__(*args, **kwargs)
             print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n')
                        
+class B(object,metaclass=metaB):
+    bNum=2
+    def __init__(self,v):
+        self.v=v
+    pass
 
-class C(B,metaclass=metaB)    :
+class C(B,)    :
     cNum=5
   
     def __init__(self,v,d):
