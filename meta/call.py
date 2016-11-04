@@ -36,12 +36,13 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
 class C(B,metaclass=metaB)    :
     cNum=5
   
-    def __init__(self,v):
+    def __init__(self,v,d):
             print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
             super().__init__(v)#这里不能写self居然
+            self.d=d
             print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
             
     pass
 
-o=C(7);    
+o=C(7,9);    
 #发现一个小的陷阱，你空白写的py文件，如果不显式设置为utf-8在notepad++中，它会存为cp936你虽然可以看到中文，换个机器就不行了。        
