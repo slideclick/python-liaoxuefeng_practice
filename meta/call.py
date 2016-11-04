@@ -8,7 +8,7 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
 #A的call是给a()用的，metaB的call是给A()用的。而A=type()那个type()的()不是你能override的
     def __call__(self, *args, **kwargs):#o=C(3); 
             print('{0}  {1} in '.format(self.__name__,inspect.stack()[0][3]),end='\r\n')
-            obj = super().__call__(*args, **kwargs)
+            obj = super().__call__(*args, **kwargs)# super会先检查参数的数量，不是随便调用new init等待它们抛异常
             print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n')
             return obj
             
@@ -26,24 +26,20 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
     def __init__(self, *args, **kwargs):
             print('{0}  {1} in '.format(self.__name__,inspect.stack()[0][3]),end='\r\n')
             obj = super().__init__(*args, **kwargs)
-            print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n')
+            print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n\r\n')
                        
 class B(object,metaclass=metaB):
     bNum=2
     def __init__(self,v):
         self.v=v
-    pass
 
 class C(B,)    :
-    cNum=5
-  
+    cNum=5  
     def __init__(self,v,d):
             print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
-            super().__init__(v)#这里不能写self居然
+            super().__init__(d)#这里不能写self居然.这里如果参数不对，是运行时错误。
             self.d=d
             print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
-            
-    pass
 
-o=C(7,9);    
+o=C(7,);    
 #发现一个小的陷阱，你空白写的py文件，如果不显式设置为utf-8在notepad++中，它会存为cp936你虽然可以看到中文，换个机器就不行了。        
