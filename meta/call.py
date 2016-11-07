@@ -40,20 +40,20 @@ class B(object,metaclass=metaB):
         print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
         self.v=v
         print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n\r\n')
-class C(B,)    :
+class C(float,)    :
     cNum=5 
-    def __new__(cls,v,d):    
+    def __new__(cls,v,):    
         print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
-        result = super().__new__(cls,v,d)
-        result.unit = d
+        result = super().__new__(cls,v)
+        result.unit = v
         print('{0}  {1} out '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
         return result
         
-    def __init__(self,v,d):
+    def __init__(self,v,):
             print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
-            super().__init__(d)#这里不能写self居然.这里如果参数不对，是运行时错误。
-            self.d=d
+            super().__init__()#这里不能写self居然.这里如果参数不对，是运行时错误。
+            self.d=v
             print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
 
-o=C(7,9);    
+o=C(7);    
 #发现一个小的陷阱，你空白写的py文件，如果不显式设置为utf-8在notepad++中，它会存为cp936你虽然可以看到中文，换个机器就不行了。        
