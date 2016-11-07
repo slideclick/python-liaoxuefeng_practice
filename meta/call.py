@@ -40,18 +40,18 @@ class B(object,metaclass=metaB):
         print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
         self.v=v
         print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n\r\n')
-class C(float,)    :
+class C(B,)    :
     cNum=5 
     def __new__(cls,v,d):    
         print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
-        result = super().__new__(cls,v)
+        result = super().__new__(cls,v,d)
         result.unit = d
         print('{0}  {1} out '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
         return result
         
     def __init__(self,v,d):
             print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
-            super().__init__()#这里不能写self居然.这里如果参数不对，是运行时错误。
+            super().__init__(d)#这里不能写self居然.这里如果参数不对，是运行时错误。
             self.d=d
             print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
 
