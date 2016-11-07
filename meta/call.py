@@ -13,7 +13,7 @@ class sth( collections.abc.Callable ):
 #为什么  metafunc可以当元类使用，看了内部还是做了检查的，上面的sth不行  
 #答：它要的是可以call的东东。sth不可以call，但是sth的对象可以call
 def metafunc(definedclzname, supers, attrs):
-     print(definedclzname, supers, attrs,end='\r\n\r\n\r\n')
+     print(definedclzname, supers, attrs,sep=' ',end='\r\n\r\n\r\n')
      result = type(definedclzname, supers, attrs)
      #type()里面怎么做，不是你可以控制的。除非你真的这么写：
      
@@ -57,18 +57,18 @@ class B(object,metaclass=metafunc):#B=type() B=metaB() 至于type()里面怎么�
         print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
         self.v=v
         print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n\r\n')
-class C(B,)    :
+class C(metaclass=metafunc)    :
     cNum=5 
     def __new__(cls,v,d):    
         print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
-        result = super().__new__(cls,v,d)
+        result = super().__new__(cls)
         result.unit = v
         print('{0}  {1} out '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
         return result
         
     def __init__(self,v,d):
             print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
-            super().__init__(d)#这里不能写self居然.这里如果参数不对，是运行时错误。
+            super().__init__()#这里不能写self居然.这里如果参数不对，是运行时错误。
             self.d=v
             print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
 
