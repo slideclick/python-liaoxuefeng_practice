@@ -35,10 +35,10 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
         return collections.OrderedDict()
 
     def __new__(cls, name, bases, namespace, **kwds):
-        print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
+        print('{0}  {1} in '.format(name,inspect.stack()[0][3]),end='\r\n')
         result = super().__new__(cls, name, bases, namespace)
         result._order = tuple(n for n in namespace if not        n.startswith('__'))
-        print('{0}  {1} out '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
+        print('{0}  {1} out '.format(name,inspect.stack()[0][3]),end='\r\n\r\n')
         return result
         
     def __init__(self, *args, **kwargs):
@@ -49,7 +49,7 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
 class B(object,metaclass=metafunc):#B=type() B=metaB() 至于type()里面怎么实现，不是你可以override的. metaB里面定义的__call是给b=B()用的
     bNum=2
     def __new__(cls,v,d):    
-        print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
+        print('{0}  {1} in '.format('<'+cls.__name__+'>',inspect.stack()[0][3]),end='\r\n')
         result = super().__new__(cls)
         print('{0}  {1} out '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
         return result    
@@ -57,13 +57,13 @@ class B(object,metaclass=metafunc):#B=type() B=metaB() 至于type()里面怎么�
         print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
         self.v=v
         print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n\r\n')
-class C(metaclass=metafunc)    :
+class C(metaclass=metaB)    :
     cNum=5 
     def __new__(cls,v,d):    
-        print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
+        print('{0}  {1} in '.format('<'+cls.__name__+'>',inspect.stack()[0][3]),end='\r\n')
         result = super().__new__(cls)
         result.unit = v
-        print('{0}  {1} out '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
+        print('{0}  {1} out '.format('<'+cls.__name__+'>',inspect.stack()[0][3]),end='\r\n')
         return result
         
     def __init__(self,v,d):
