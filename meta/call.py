@@ -13,8 +13,10 @@ class sth( collections.abc.Callable ):
 #为什么  metafunc可以当元类使用，看了内部还是做了检查的，上面的sth不行  
 #答：它要的是可以call的东东。sth不可以call，但是sth的对象可以call
 def metafunc(definedclzname, supers, attrs):
+     print(definedclzname, supers, attrs,end='\r\n\r\n\r\n')
+     result = type(definedclzname, supers, attrs)
      print(definedclzname, supers, attrs)
-     return type(definedclzname, supers, attrs)
+     return result
      
 class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是type的metaClass还是type.call而不是metaB.call
 #所以你看不到C=type()这个call里面的template,你只能看到o=C()的()的过程
@@ -42,7 +44,7 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
             obj = super().__init__(*args, **kwargs)
             print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n\r\n')
                        
-class B(object,metaclass=sth()):
+class B(object,metaclass=metafunc):
     bNum=2
     def __new__(cls,v,d):    
         print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
@@ -53,20 +55,20 @@ class B(object,metaclass=sth()):
         print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
         self.v=v
         print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n\r\n')
-class C(float,)    :
+class C(B,)    :
     cNum=5 
-    def __new__(cls,v,):    
+    def __new__(cls,v,d):    
         print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
-        result = super().__new__(cls,v)
+        result = super().__new__(cls,v,d)
         result.unit = v
         print('{0}  {1} out '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
         return result
         
-    def __init__(self,v,):
+    def __init__(self,v,d):
             print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
-            super().__init__()#这里不能写self居然.这里如果参数不对，是运行时错误。
+            super().__init__(d)#这里不能写self居然.这里如果参数不对，是运行时错误。
             self.d=v
             print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
 
-o=C(7);    
+o=C(7,9);    
 #发现一个小的陷阱，你空白写的py文件，如果不显式设置为utf-8在notepad++中，它会存为cp936你虽然可以看到中文，换个机器就不行了。        
