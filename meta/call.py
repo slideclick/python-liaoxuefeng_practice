@@ -15,7 +15,7 @@ class sth( collections.abc.Callable ):
 def metafunc(definedclzname, supers, attrs):
      print(definedclzname, supers, attrs,sep=' ',end='\r\n\r\n\r\n')
      result = type(definedclzname, supers, attrs)
-     #type()里面怎么做，不是你可以控制的。除非你真的这么写：
+     #type()里面怎么做，不是你可以控制的
      
      print(definedclzname, supers, attrs)
      return result
@@ -29,7 +29,7 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
             #错了，不是先检查。也是等待它们跑异常，只是它抛出时，你看不到stack就好像是call抛出的
             print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n')
             return obj
-            
+    print('metaB Class was made')        
     @classmethod
     def __prepare__(metacls, name, bases, **kwds):
         return collections.OrderedDict()
@@ -48,10 +48,11 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
                        
 class B(object,metaclass=metafunc):#B=type() B=metaB() 至于type()里面怎么实现，不是你可以override的. metaB里面定义的__call是给b=B()用的
     bNum=2
-    def __new__(cls,v,d):    
+    print('B Class was made')
+    def __new__(cls,v):    
         print('{0}  {1} in '.format('<'+cls.__name__+'>',inspect.stack()[0][3]),end='\r\n')
         result = super().__new__(cls)
-        print('{0}  {1} out '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
+        print('{0}  {1} out '.format('<'+cls.__name__+'>',inspect.stack()[0][3]),end='\r\n')
         return result    
     def __init__(self,v):
         print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
@@ -59,6 +60,7 @@ class B(object,metaclass=metafunc):#B=type() B=metaB() 至于type()里面怎么�
         print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n\r\n')
 class C(metaclass=metaB)    :
     cNum=5 
+    print('C Class was made')
     def __new__(cls,v,d):    
         print('{0}  {1} in '.format('<'+cls.__name__+'>',inspect.stack()[0][3]),end='\r\n')
         result = super().__new__(cls)
@@ -72,5 +74,6 @@ class C(metaclass=metaB)    :
             self.d=v
             print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
 
-o=C(7,9);    
+o=C(7,9);   
+b=B(1) 
 #发现一个小的陷阱，你空白写的py文件，如果不显式设置为utf-8在notepad++中，它会存为cp936你虽然可以看到中文，换个机器就不行了。        
