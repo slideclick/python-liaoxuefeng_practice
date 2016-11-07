@@ -3,6 +3,19 @@ import inspect
 import collections
 
 
+import collections.abc
+class sth( collections.abc.Callable ):
+    def __call__(self, *args, **kwargs):
+        print('{0}  {1} in '.format(self.__class__,inspect.stack()[0][3]),end='\r\n')
+        pass
+    pass
+#http://openhome.cc/Gossip/Python/Metaclass.html
+#为什么  metafunc可以当元类使用，看了内部还是做了检查的，上面的sth不行  
+#答：它要的是可以call的东东。sth不可以call，但是sth的对象可以call
+def metafunc(definedclzname, supers, attrs):
+     print(definedclzname, supers, attrs)
+     return type(definedclzname, supers, attrs)
+     
 class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是type的metaClass还是type.call而不是metaB.call
 #所以你看不到C=type()这个call里面的template,你只能看到o=C()的()的过程
 #A的call是给a()用的，metaB的call是给A()用的。而A=type()那个type()的()不是你能override的
@@ -29,7 +42,7 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
             obj = super().__init__(*args, **kwargs)
             print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n\r\n')
                        
-class B(object,metaclass=metaB):
+class B(object,metaclass=sth()):
     bNum=2
     def __new__(cls,v,d):    
         print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
