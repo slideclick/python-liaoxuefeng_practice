@@ -15,6 +15,8 @@ class sth( collections.abc.Callable ):
 def metafunc(definedclzname, supers, attrs):
      print(definedclzname, supers, attrs,end='\r\n\r\n\r\n')
      result = type(definedclzname, supers, attrs)
+     #type()里面怎么做，不是你可以控制的。除非你真的这么写：
+     
      print(definedclzname, supers, attrs)
      return result
      
@@ -44,7 +46,7 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
             obj = super().__init__(*args, **kwargs)
             print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n\r\n')
                        
-class B(object,metaclass=metafunc):
+class B(object,metaclass=metafunc):#B=type() B=metaB() 至于type()里面怎么实现，不是你可以override的. metaB里面定义的__call是给b=B()用的
     bNum=2
     def __new__(cls,v,d):    
         print('{0}  {1} in '.format(cls.__name__,inspect.stack()[0][3]),end='\r\n')
