@@ -16,9 +16,21 @@ def metafunc(definedclzname, supers, attrs):
      print(definedclzname, supers, attrs,sep=' ',end='\r\n\r\n\r\n')
      result = type(definedclzname, supers, attrs)
      #type()里面怎么做，不是你可以控制的
-     
+     result = type.__new__(type,definedclzname, supers, attrs)
+     type.__init__(result,2)
      print(definedclzname, supers, attrs)
      return result
+'''
+class type(object):
+    def __call__(self, *args, **kwargs):#这里self指向的是A这个东东（type的inst），参数是你传给init的东东
+        # should do the same thing as type.__call__
+        obj = self.__new__(self, *args, **kwargs)
+        if isinstance(obj, self):
+            obj.__init__(*args, **kwargs)
+        return obj
+
+'''
+
      
 class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是type的metaClass还是type.call而不是metaB.call
 #所以你看不到C=type()这个call里面的template,你只能看到o=C()的()的过程
@@ -29,7 +41,7 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
             #错了，不是先检查。也是等待它们跑异常，只是它抛出时，你看不到stack就好像是call抛出的
             print('{0}  {1} out'.format(self.__name__,inspect.stack()[0][3]),end='\r\n')
             return obj
-    print('metaB Class was made')        
+    print('metaB Class was made',end='\r\n\r\n')        
     @classmethod
     def __prepare__(metacls, name, bases, **kwds):
         return collections.OrderedDict()
@@ -48,7 +60,7 @@ class metaB(type):#注意你仅仅hook了C这个东东的创建过程，但是ty
                        
 class B(object,metaclass=metafunc):#B=type() B=metaB() 至于type()里面怎么实现，不是你可以override的. metaB里面定义的__call是给b=B()用的
     bNum=2
-    print('B Class was made')
+    print('B Class was made',end='\r\n\r\n')
     def __new__(cls,v):    
         print('{0}  {1} in '.format('<'+cls.__name__+'>',inspect.stack()[0][3]),end='\r\n')
         result = super().__new__(cls)
@@ -60,7 +72,7 @@ class B(object,metaclass=metafunc):#B=type() B=metaB() 至于type()里面怎么�
         print('{0}  {1} out'.format(self.__class__,inspect.stack()[0][3]),end='\r\n\r\n')
 class C(metaclass=metaB)    :
     cNum=5 
-    print('C Class was made')
+    print('C Class was made',end='\r\n\r\n')
     def __new__(cls,v,d):    
         print('{0}  {1} in '.format('<'+cls.__name__+'>',inspect.stack()[0][3]),end='\r\n')
         result = super().__new__(cls)
